@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Drag Papers ❤</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Short+Stack&family=Homemade+Apple&display=swap">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Zeyada&display=swap');
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: 1000px;
+      background-image: url("https://www.psdgraphics.com/wp-content/uploads/2022/01/white-math-paper-texture.jpg");
+      background-position: center center;
+    }
+
+    .paper {
+      background-image: url("https://i0.wp.com/textures.world/wp-content/uploads/2018/10/2-Millimeter-Paper-Background-copy.jpg?ssl=1");
+      background-size: 500px;
+      background-position: center center;
+      padding: 20px 100px;
+      transform: rotateZ(-5deg);
+      box-shadow: 1px 15px 20px 0px rgba(0,0,0,0.5);
+      position: absolute;
+    }
+
+    .paper.heart {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    .paper.image {
+      padding: 10px;
+    }
+
+    .paper.image p {
+      font-size: 30px;
+    }
+
+    img {
+      max-height: 200px;
+      width: 100%;
+      user-select: none;
+    }
+
+    .paper.heart::after {
+      content: "";
+      background-image: url('https://cdn.pixabay.com/photo/2016/03/31/19/25/cartoon-1294994__340.png');
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-size: 150px;
+      background-position: center center;
+      background-repeat: no-repeat;
+      opacity: 0.6;
+    }
+
+    p {
+      font-family: 'Zeyada';
+      font-size: 50px;
+      color: rgb(0,0,100);
+      opacity: 0.75;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="paper heart"></div>
+  
+  <div class="paper image">
+    <p>and I fell in</p>
+    <p>Love with You 😍</p>
+    <img src="ing3.jpg" />
+  </div>
+
+  <div class="paper image">
+    <p>sundori</p>
+    <img src="img2.jpg" />
+  </div>
+
+  <div class="paper image">
+    <p>How can someone be </p>
+    <p>so cute ❤</p>
+    <img src="img1.jpg" />
+  </div>
+
+  <div class="paper red">
+    <p class="p1">Alwas be My Favorite</p>
+    <p class="p2">Person 😍</p>
+ <img src="img4.jpg" />
+  </div>
+
+  <div class="paper">
+    <p class="p1">HAPPY BIRTHDAY</p>
+    <p class="p1">MY LOVE<span style="color: red !important;">❤</span></p>
+  </div>
+
+  <div class="paper">
+    <p class="p1">Drag the papers to move!</p>
+  </div>
+
+  <script>
+    let highestZ = 1;
+
+    class Paper {
+      holdingPaper = false;
+      startX = 0;
+      startY = 0;
+      moveX = 0;
+      moveY = 0;
+      prevX = 0;
+      prevY = 0;
+      velX = 0;
+      velY = 0;
+      rotation = Math.random() * 30 - 15;
+      currentPaperX = 0;
+      currentPaperY = 0;
+      rotating = false;
+
+      init(paper) {
+        const movePaper = (clientX, clientY) => {
+          if (!this.rotating) {
+            this.moveX = clientX;
+            this.moveY = clientY;
+
+            this.velX = this.moveX - this.prevX;
+            this.velY = this.moveY - this.prevY;
+          }
+
+          const dirX = clientX - this.startX;
+          const dirY = clientY - this.startY;
+          const dirLength = Math.sqrt(dirX * dirX + dirY * dirY);
+          const dirNormalizedX = dirX / dirLength;
+          const dirNormalizedY = dirY / dirLength;
+
+          const angle = Math.atan2(dirNormalizedY, dirNormalizedX);
+          let degrees = 180 * angle / Math.PI;
+          degrees = (360 + Math.round(degrees)) % 360;
+          if (this.rotating) {
+            this.rotation = degrees;
+          }
+
+          if (this.holdingPaper) {
+            if (!this.rotating) {
+              this.currentPaperX += this.velX;
+              this.currentPaperY += this.velY;
+            }
+            this.prevX = this.moveX;
+            this.prevY = this.moveY;
+
+            paper.style.transform = `translateX(${this.currentPaperX}px) translateY(${this.currentPaperY}px) rotateZ(${this.rotation}deg)`;
+          }
+        };
+
+        // Touch Events
+        paper.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+          movePaper(e.touches[0].clientX, e.touches[0].clientY);
+        });
+
+        paper.addEventListener('touchstart', (e) => {
+          if (this.holdingPaper) return;
+          this.holdingPaper = true;
+
+          paper.style.zIndex = highestZ;
+          highestZ += 1;
+
+          this.startX = e.touches[0].clientX;
+          this.startY = e.touches[0].clientY;
+          this.prevX = this.startX;
+          this.prevY = this.startY;
+        });
+
+        paper.addEventListener('touchend', () => {
+          this.holdingPaper = false;
+          this.rotating = false;
+        });
+
+        // Mouse Events
+        paper.addEventListener('mousedown', (e) => {
+          if (this.holdingPaper) return;
+          this.holdingPaper = true;
+
+          paper.style.zIndex = highestZ;
+          highestZ += 1;
+
+          this.startX = e.clientX;
+          this.startY = e.clientY;
+          this.prevX = this.startX;
+          this.prevY = this.startY;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+          if (this.holdingPaper) {
+            movePaper(e.clientX, e.clientY);
+          }
+        });
+
+        document.addEventListener('mouseup', () => {
+          this.holdingPaper = false;
+          this.rotating = false;
+        });
+
+        // For two-finger rotation on touch screens
+        paper.addEventListener('gesturestart', (e) => {
+          e.preventDefault();
+          this.rotating = true;
+        });
+
+        paper.addEventListener('gestureend', () => {
+          this.rotating = false;
+        });
+      }
+    }
+
+    const papers = Array.from(document.querySelectorAll('.paper'));
+
+    papers.forEach(paper => {
+      const p = new Paper();
+      p.init(paper);
+    });
+  </script>
+</body>
+</html>
